@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ProWork Skills Dashboard</title>
+
+  <style>
+    :root {
+      --bg: #071018;
+      --surface: #0d1a24;
+      --surface2: #122532;
+      --line: #214052;
+      --text: #edf8ff;
+      --muted: #91adbd;
+      --brand: #36d1b4;
+      --brand2: #56a8ff;
+      --hot: #ffbe55;
+      --shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(circle at 80% -10%, #173a50 0, transparent 34%),
+        var(--bg);
+      color: var(--text);
+      font: 14px/1.45 Inter, ui-sans-serif, system-ui, -apple-system,
+        "Segoe UI", sans-serif;
+    }
+
+    .shell {
+      max-width: 1500px;
+      margin: auto;
+      padding: 28px;
+    }
+
+    .header {
+      display: flex;
+      gap: 24px;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      color: var(--brand);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .title {
+      margin: 7px 0 10px;
+      font-size: clamp(30px, 4vw, 54px);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .intro {
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .count {
+      color: var(--brand);
+      font-size: 46px;
+      font-weight: 850;
+      line-height: 1;
+    }
+
+    .count-label {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 12px;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: minmax(250px, 1fr) auto;
+      gap: 14px;
+      padding: 14px;
+      background: rgba(13, 26, 36, 0.88);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-icon {
+      position: absolute;
+      top: 12px;
+      left: 15px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .search {
+      width: 100%;
+      padding: 13px 45px;
+      color: var(--text);
+      background: #07141d;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      outline: none;
+      font: inherit;
+    }
+
+    .search:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(54, 209, 180, 0.12);
+    }
+
+    .clear {
+      position: absolute;
+      top: 7px;
+      right: 8px;
+      display: none;
+      padding: 4px 9px;
+      color: var(--muted);
+      background: transparent;
+      border: 0;
+      font-size: 21px;
+      cursor: pointer;
+    }
+
+    .clear:hover {
+      color: #fff;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .chip {
+      padding: 9px 13px;
+      color: var(--muted);
+      background: #0a1720;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .chip:hover {
+      color: #fff;
+      border-color: #3b647c;
+    }
+
+    .chip.active {
+      color: #06120f;
+      background: var(--brand);
+      border-color: var(--brand);
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 22px 3px 13px;
+      color: var(--muted);
+    }
+
+    .meta strong {
+      color: var(--text);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      position: relative;
+      display: flex;
+      min-height: 218px;
+      flex-direction: column;
+      padding: 19px;
+      background: linear-gradient(
+        145deg,
+        rgba(18, 37, 50, 0.94),
+        rgba(10, 24, 33, 0.96)
+      );
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      cursor: pointer;
+      transition:
+        0.18s transform,
+        0.18s border-color,
+        0.18s box-shadow;
+    }
+
+    .card:hover,
+    .card:focus {
+      border-color: #42809c;
+      box-shadow: var(--shadow);
+      outline: none;
+      transform: translateY(-3px);
+    }
+
+    .card.open {
+      grid-column: span 2;
+      border-color: var(--brand);
+    }
+
+    .top {
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+    }
+
+    .icon {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      background: linear-gradient(
+        145deg,
+        rgba(54, 209, 180, 0.2),
+        rgba(86, 168, 255, 0.17)
+      );
+      border-radius: 12px;
+      font-size: 21px;
+    }
+
+    .badge {
+      height: 26px;
+      padding: 4px 9px;
+      color: #83cfff;
+      background: #102e3c;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .card h2 {
+      margin: 15px 0 7px;
+      font-size: 18px;
+    }
+
+    .desc {
+      margin: 0 0 15px;
+      color: var(--muted);
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: auto;
+    }
+
+    .tag {
+      padding: 4px 8px;
+      color: #b9cfda;
+      background: #071720;
+      border: 1px solid #173545;
+      border-radius: 6px;
+      font-size: 11px;
+    }
+
+    .details {
+      display: none;
+      margin-top: 15px;
+      padding-top: 14px;
+      color: #c4d7e0;
+      border-top: 1px solid var(--line);
+    }
+
+    .open .details {
+      display: block;
+    }
+
+    .details b {
+      color: var(--hot);
+    }
+
+    .empty {
+      display: none;
+      padding: 70px 20px;
+      color: var(--muted);
+      border: 1px dashed var(--line);
+      border-radius: 16px;
+      text-align: center;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .kbd {
+      padding: 1px 5px;
+      color: #dcecf3;
+      border: 1px solid var(--line);
+      border-bottom-width: 2px;
+      border-radius: 5px;
+      font-family: ui-monospace, monospace;
+    }
+
+    @media (max-width: 760px) {
+      .shell {
+        padding: 18px;
+      }
+
+      .header {
+        align-items: flex-start;
+      }
+
+      .countbox {
+        display: none;
+      }
+
+      .toolbar {
+        position: static;
+        grid-template-columns: 1fr;
+      }
+
+      .card.open {
+        grid-column: span 1;
+      }
+
+      .hint {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="shell">
+    <header class="header">
+      <div>
+        <div class="eyebrow">Capability directory</div>
+        <h1 class="title">ProWork Skills</h1>
+        <div class="intro">
+          Explore the ArcGIS, application-building, data, visualization,
+          and automation capabilities currently available. Search by task,
+          technology, output, or keyword.
+        </div>
+      </div>
+
+      <div class="countbox">
+        <div class="count" id="heroCount">12</div>
+        <div class="count-label">capability groups</div>
+      </div>
+    </header>
+
+    <section class="toolbar" aria-label="Skill search and filters">
+      <div class="search-wrap">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+
+        <input
+          id="search"
+          class="search"
+          type="search"
+          placeholder="Search functions — e.g. publish, route, dashboard, knowledge graph…"
+          autocomplete="off"
+          aria-label="Search skills"
+        >
+
+        <button id="clear" class="clear" aria-label="Clear search">
+          ×
+        </button>
+      </div>
+
+      <div class="filters" id="filters"></div>
+    </section>
+
+    <div class="meta">
+      <span><strong id="resultCount">12</strong> results</span>
+
+      <span class="hint">
+        <span class="kbd">/</span> search · click a card for details
+      </span>
+    </div>
+
+    <section class="grid" id="grid"></section>
+
+    <div id="empty" class="empty">
+      <h2>No matching skills</h2>
+      <p>Try a broader function or select “All”.</p>
+    </div>
+  </main>
+
+  <script>
+    const skills = [
+      {
+        name: "Experience Builder Deployment",
+        category: "Applications",
+        icon: "⬡",
+        description:
+          "Deploy and maintain ArcGIS Experience Builder applications in ArcGIS Enterprise through reproducible PowerShell workflows.",
+        tags: [
+          "Experience Builder",
+          "Enterprise",
+          "PowerShell",
+          "migration"
+        ],
+        details:
+          "Creates or updates Experience items, remaps data sources and web maps, manages widgets, and migrates app configurations between environments.",
+        installedSkill: true
+      },
+      {
+        name: "Interactive Maps & Scenes",
+        category: "Visualization",
+        icon: "◈",
+        description:
+          "Build interactive 2D web maps and 3D web scenes using ArcGIS web technologies.",
+        tags: ["WebMap", "WebScene", "2D", "3D", "basemap"],
+        details:
+          "Mounts authenticated maps and scenes, controls viewpoints, layers, basemaps, popups, and map widgets."
+      },
+      {
+        name: "Dashboard Design",
+        category: "Applications",
+        icon: "▦",
+        description:
+          "Create paneled, data-driven operational dashboards with maps, KPIs, statistics, gauges, and status lists.",
+        tags: ["dashboard", "KPI", "panels", "monitoring"],
+        details:
+          "Supports left, right, footer, and KPI regions with live layer-bound indicators and cohesive light or dark themes."
+      },
+      {
+        name: "Layer Styling",
+        category: "Visualization",
+        icon: "◉",
+        description:
+          "Apply thematic cartography and smart mapping renderers to feature layers.",
+        tags: [
+          "symbology",
+          "heatmap",
+          "unique values",
+          "graduated colors"
+        ],
+        details:
+          "Styles layers with simple symbols, categories, graduated color classes, heatmaps, transparency, and visual variables."
+      },
+      {
+        name: "Portal Search & Discovery",
+        category: "Data",
+        icon: "⌕",
+        description:
+          "Find ArcGIS Online or Enterprise content, inspect item metadata, and discover services.",
+        tags: ["portal", "search", "items", "services"],
+        details:
+          "Searches authenticated portal content and retrieves item, service, layer, field, and sharing information."
+      },
+      {
+        name: "Feature Data Queries",
+        category: "Data",
+        icon: "≣",
+        description:
+          "Query, filter, count, summarize, and spatially analyze records in ArcGIS feature layers.",
+        tags: ["SQL", "features", "statistics", "spatial query"],
+        details:
+          "Handles attribute and spatial filters, counts, grouped statistics, pagination, and cross-layer questions."
+      },
+      {
+        name: "Geocoding & Places",
+        category: "Analysis",
+        icon: "⌖",
+        description:
+          "Turn addresses and place names into locations, or reverse-geocode coordinates.",
+        tags: ["geocode", "address", "places", "coordinates"],
+        details:
+          "Supports single and bulk geocoding, candidate search, reverse geocoding, and mapped location results."
+      },
+      {
+        name: "Routing & Network Analysis",
+        category: "Analysis",
+        icon: "↝",
+        description:
+          "Solve routes and other travel-based analyses using ArcGIS network services.",
+        tags: ["route", "directions", "travel time", "network"],
+        details:
+          "Works with stops, barriers, travel modes, route geometry, directions, and result visualization."
+      },
+      {
+        name: "Geometry Operations",
+        category: "Analysis",
+        icon: "△",
+        description:
+          "Buffer, project, measure, intersect, union, and compare spatial geometries.",
+        tags: ["buffer", "intersect", "area", "distance"],
+        details:
+          "Performs server-grade geometry operations while preserving spatial reference and efficiently handling large results."
+      },
+      {
+        name: "Raster & Imagery",
+        category: "Analysis",
+        icon: "▧",
+        description:
+          "Inspect and analyze image services, elevation, pixels, statistics, and raster functions.",
+        tags: ["raster", "imagery", "elevation", "pixel"],
+        details:
+          "Supports pixel identification, profiles, service statistics, raster functions, and imagery exploration."
+      },
+      {
+        name: "Knowledge Graphs",
+        category: "Data",
+        icon: "⌬",
+        description:
+          "Query, search, edit, model, and visualize ArcGIS Knowledge Graph entities and relationships.",
+        tags: [
+          "openCypher",
+          "entities",
+          "relationships",
+          "link chart"
+        ],
+        details:
+          "Runs graph queries and full-text search, manages schema and records, and renders interactive link charts."
+      },
+      {
+        name: "Publishing & Sharing",
+        category: "Automation",
+        icon: "⇧",
+        description:
+          "Upload, publish, configure, and share ArcGIS portal content and hosted services.",
+        tags: ["publish", "upload", "sharing", "hosted layer"],
+        details:
+          "Supports repeatable publishing workflows, item updates, service configuration, and organization or group sharing."
+      }
+    ];
+
+    const categories = [
+      "All",
+      ...new Set(skills.map((skill) => skill.category))
+    ];
+
+    let activeCategory = "All";
+
+    const grid = document.getElementById("grid");
+    const search = document.getElementById("search");
+    const clearButton = document.getElementById("clear");
+    const filters = document.getElementById("filters");
+    const resultCount = document.getElementById("resultCount");
+    const heroCount = document.getElementById("heroCount");
+    const emptyState = document.getElementById("empty");
+
+    filters.innerHTML = categories
+      .map(
+        (category) => `
+          <button
+            class="chip ${category === "All" ? "active" : ""}"
+            data-category="${category}"
+            type="button"
+          >
+            ${category}
+          </button>
+        `
+      )
+      .join("");
+
+    function getMatchingSkills() {
+      const query = search.value.trim().toLowerCase();
+
+      return skills.filter((skill) => {
+        const categoryMatches =
+          activeCategory === "All" ||
+          skill.category === activeCategory;
+
+        const searchableText = [
+          skill.name,
+          skill.category,
+          skill.description,
+          skill.details,
+          ...skill.tags
+        ]
+          .join(" ")
+          .toLowerCase();
+
+        const searchMatches =
+          !query || searchableText.includes(query);
+
+        return categoryMatches && searchMatches;
+      });
+    }
+
+    function toggleCard(card) {
+      const isOpen = card.classList.toggle("open");
+      card.setAttribute("aria-expanded", String(isOpen));
+    }
+
+    function render() {
+      const matchingSkills = getMatchingSkills();
+
+      grid.innerHTML = matchingSkills
+        .map(
+          (skill) => `
+            <article
+              class="card"
+              tabindex="0"
+              role="button"
+              aria-expanded="false"
+            >
+              <div class="top">
+                <div class="icon" aria-hidden="true">
+                  ${skill.icon}
+                </div>
+
+                <span class="badge">
+                  ${
+                    skill.installedSkill
+                      ? "Installed skill"
+                      : skill.category
+                  }
+                </span>
+              </div>
+
+              <h2>${skill.name}</h2>
+
+              <p class="desc">
+                ${skill.description}
+              </p>
+
+              <div class="tags">
+                ${skill.tags
+                  .map(
+                    (tag) => `<span class="tag">${tag}</span>`
+                  )
+                  .join("")}
+              </div>
+
+              <div class="details">
+                <b>Functions</b><br>
+                ${skill.details}
+              </div>
+            </article>
+          `
+        )
+        .join("");
+
+      resultCount.textContent = matchingSkills.length;
+      heroCount.textContent = skills.length;
+      emptyState.style.display =
+        matchingSkills.length > 0 ? "none" : "block";
+
+      clearButton.style.display =
+        search.value.trim() ? "block" : "none";
+
+      grid.querySelectorAll(".card").forEach((card) => {
+        card.addEventListener("click", () => {
+          toggleCard(card);
+        });
+
+        card.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            toggleCard(card);
+          }
+        });
+      });
+    }
+
+    search.addEventListener("input", render);
+
+    clearButton.addEventListener("click", () => {
+      search.value = "";
+      search.focus();
+      render();
+    });
+
+    filters.addEventListener("click", (event) => {
+      const button = event.target.closest(".chip");
+
+      if (!button) {
+        return;
+      }
+
+      activeCategory = button.dataset.category;
+
+      filters.querySelectorAll(".chip").forEach((chip) => {
+        chip.classList.toggle("active", chip === button);
+      });
+
+      render();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (
+        event.key === "/" &&
+        document.activeElement !== search
+      ) {
+        event.preventDefault();
+        search.focus();
+      }
+
+      if (
+        event.key === "Escape" &&
+        document.activeElement === search
+      ) {
+        search.value = "";
+        search.blur();
+        render();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
