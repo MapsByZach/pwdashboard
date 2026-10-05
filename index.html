@@ -1,720 +1,666 @@
+Copy and paste this into a file such as prowork-skills-dashboard.html:
+
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ProWork Skills Dashboard</title>
-
-  <style>
-    :root {
-      --bg: #071018;
-      --surface: #0d1a24;
-      --surface2: #122532;
-      --line: #214052;
-      --text: #edf8ff;
-      --muted: #91adbd;
-      --brand: #36d1b4;
-      --brand2: #56a8ff;
-      --hot: #ffbe55;
-      --shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      min-height: 100vh;
-      margin: 0;
-      background:
-        radial-gradient(circle at 80% -10%, #173a50 0, transparent 34%),
-        var(--bg);
-      color: var(--text);
-      font: 14px/1.45 Inter, ui-sans-serif, system-ui, -apple-system,
-        "Segoe UI", sans-serif;
-    }
-
-    .shell {
-      max-width: 1500px;
-      margin: auto;
-      padding: 28px;
-    }
-
-    .header {
-      display: flex;
-      gap: 24px;
-      align-items: flex-end;
-      justify-content: space-between;
-      margin-bottom: 22px;
-    }
-
-    .eyebrow {
-      color: var(--brand);
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-    }
-
-    .title {
-      margin: 7px 0 10px;
-      font-size: clamp(30px, 4vw, 54px);
-      line-height: 1;
-      letter-spacing: -0.04em;
-    }
-
-    .intro {
-      max-width: 720px;
-      color: var(--muted);
-      font-size: 15px;
-    }
-
-    .count {
-      color: var(--brand);
-      font-size: 46px;
-      font-weight: 850;
-      line-height: 1;
-    }
-
-    .count-label {
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 12px;
-      text-align: right;
-    }
-
-    .toolbar {
-      position: sticky;
-      top: 12px;
-      z-index: 10;
-      display: grid;
-      grid-template-columns: minmax(250px, 1fr) auto;
-      gap: 14px;
-      padding: 14px;
-      background: rgba(13, 26, 36, 0.88);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(16px);
-    }
-
-    .search-wrap {
-      position: relative;
-    }
-
-    .search-icon {
-      position: absolute;
-      top: 12px;
-      left: 15px;
-      color: var(--muted);
-      font-size: 18px;
-    }
-
-    .search {
-      width: 100%;
-      padding: 13px 45px;
-      color: var(--text);
-      background: #07141d;
-      border: 1px solid transparent;
-      border-radius: 12px;
-      outline: none;
-      font: inherit;
-    }
-
-    .search:focus {
-      border-color: var(--brand);
-      box-shadow: 0 0 0 3px rgba(54, 209, 180, 0.12);
-    }
-
-    .clear {
-      position: absolute;
-      top: 7px;
-      right: 8px;
-      display: none;
-      padding: 4px 9px;
-      color: var(--muted);
-      background: transparent;
-      border: 0;
-      font-size: 21px;
-      cursor: pointer;
-    }
-
-    .clear:hover {
-      color: #fff;
-    }
-
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-    }
-
-    .chip {
-      padding: 9px 13px;
-      color: var(--muted);
-      background: #0a1720;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .chip:hover {
-      color: #fff;
-      border-color: #3b647c;
-    }
-
-    .chip.active {
-      color: #06120f;
-      background: var(--brand);
-      border-color: var(--brand);
-    }
-
-    .meta {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 22px 3px 13px;
-      color: var(--muted);
-    }
-
-    .meta strong {
-      color: var(--text);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-      gap: 14px;
-    }
-
-    .card {
-      position: relative;
-      display: flex;
-      min-height: 218px;
-      flex-direction: column;
-      padding: 19px;
-      background: linear-gradient(
-        145deg,
-        rgba(18, 37, 50, 0.94),
-        rgba(10, 24, 33, 0.96)
-      );
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      cursor: pointer;
-      transition:
-        0.18s transform,
-        0.18s border-color,
-        0.18s box-shadow;
-    }
-
-    .card:hover,
-    .card:focus {
-      border-color: #42809c;
-      box-shadow: var(--shadow);
-      outline: none;
-      transform: translateY(-3px);
-    }
-
-    .card.open {
-      grid-column: span 2;
-      border-color: var(--brand);
-    }
-
-    .top {
-      display: flex;
-      gap: 12px;
-      justify-content: space-between;
-    }
-
-    .icon {
-      display: grid;
-      width: 42px;
-      height: 42px;
-      place-items: center;
-      background: linear-gradient(
-        145deg,
-        rgba(54, 209, 180, 0.2),
-        rgba(86, 168, 255, 0.17)
-      );
-      border-radius: 12px;
-      font-size: 21px;
-    }
-
-    .badge {
-      height: 26px;
-      padding: 4px 9px;
-      color: #83cfff;
-      background: #102e3c;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 750;
-    }
-
-    .card h2 {
-      margin: 15px 0 7px;
-      font-size: 18px;
-    }
-
-    .desc {
-      margin: 0 0 15px;
-      color: var(--muted);
-    }
-
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: auto;
-    }
-
-    .tag {
-      padding: 4px 8px;
-      color: #b9cfda;
-      background: #071720;
-      border: 1px solid #173545;
-      border-radius: 6px;
-      font-size: 11px;
-    }
-
-    .details {
-      display: none;
-      margin-top: 15px;
-      padding-top: 14px;
-      color: #c4d7e0;
-      border-top: 1px solid var(--line);
-    }
-
-    .open .details {
-      display: block;
-    }
-
-    .details b {
-      color: var(--hot);
-    }
-
-    .empty {
-      display: none;
-      padding: 70px 20px;
-      color: var(--muted);
-      border: 1px dashed var(--line);
-      border-radius: 16px;
-      text-align: center;
-    }
-
-    .hint {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .kbd {
-      padding: 1px 5px;
-      color: #dcecf3;
-      border: 1px solid var(--line);
-      border-bottom-width: 2px;
-      border-radius: 5px;
-      font-family: ui-monospace, monospace;
-    }
-
-    @media (max-width: 760px) {
-      .shell {
-        padding: 18px;
-      }
-
-      .header {
-        align-items: flex-start;
-      }
-
-      .countbox {
-        display: none;
-      }
-
-      .toolbar {
-        position: static;
-        grid-template-columns: 1fr;
-      }
-
-      .card.open {
-        grid-column: span 1;
-      }
-
-      .hint {
-        display: none;
-      }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ProWork Skill Library</title>
+<style>
+:root{--bg:#07111d;--panel:#0d1b2a;--panel2:#10243a;--line:#213a53;--text:#ecf5ff;--muted:#8fa8bf;--brand:#36d1c4;--blue:#55a7ff;--gold:#ffcb6b}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 20% 0,#12304a 0,transparent 30%),var(--bg);color:var(--text);font:14px/1.45 system-ui,sans-serif}
+button,input,select{font:inherit}
+.shell{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.sidebar{border-right:1px solid var(--line);background:#091522;padding:24px 18px;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{font-size:20px;font-weight:800}.brand b{color:var(--brand)}
+.muted{color:var(--muted);font-size:12px}
+.total{background:linear-gradient(135deg,#10283d,#0d1b2a);border:1px solid var(--line);border-radius:14px;padding:16px;margin:22px 0}
+.total strong{display:block;font-size:32px;color:var(--brand)}
+nav button{display:flex;width:100%;justify-content:space-between;border:0;background:transparent;color:var(--muted);padding:9px 10px;border-radius:8px;cursor:pointer;text-align:left}
+nav button:hover,nav button.active{background:#16304a;color:#fff}
+main{padding:28px;min-width:0}
+header{display:flex;justify-content:space-between;align-items:end;margin-bottom:22px}
+h1{font-size:30px;margin:0 0 5px}
+.controls{display:grid;grid-template-columns:minmax(220px,1fr) 170px auto;gap:10px;margin-bottom:16px}
+input,select,.toggle{background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:11px 13px}
+.toggle{cursor:pointer}.toggle.on{border-color:var(--gold);color:var(--gold)}
+.summary{display:flex;gap:8px;margin:12px 0 18px;color:var(--muted)}
+.pill{border:1px solid var(--line);background:#0c1b29;border-radius:99px;padding:5px 9px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:12px}
+.card{position:relative;background:linear-gradient(150deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:13px;padding:16px;min-height:130px;cursor:pointer;transition:.18s}
+.card:hover{transform:translateY(-2px);border-color:#3e6f98;box-shadow:0 10px 25px #0005}
+.card h3{font-size:15px;margin:10px 28px 7px 0;overflow-wrap:anywhere}
+.tag{display:inline-block;color:#8bd7ff;background:#12304b;border:1px solid #22547b;padding:3px 7px;border-radius:99px;font-size:11px}
+.star{position:absolute;right:11px;top:10px;border:0;background:none;color:#577087;font-size:19px;cursor:pointer}
+.star.on{color:var(--gold)}
+.empty{grid-column:1/-1;padding:70px 15px;text-align:center;color:var(--muted)}
+.drawer{position:fixed;inset:0 0 0 auto;width:min(440px,92vw);background:#0b1826;border-left:1px solid var(--line);box-shadow:-20px 0 60px #0009;padding:26px;transform:translateX(105%);transition:.22s;z-index:10;overflow:auto}
+.drawer.open{transform:none}
+.close{float:right;border:1px solid var(--line);background:var(--panel);color:#fff;border-radius:8px;padding:7px 10px;cursor:pointer}
+.drawer h2{clear:both;padding-top:24px;overflow-wrap:anywhere}
+.path{background:#07111d;border:1px solid var(--line);border-radius:8px;padding:10px;color:#9dc3e5;overflow-wrap:anywhere}
+.actions{display:flex;gap:8px;margin-top:18px}
+.actions button{border:1px solid #3476a6;background:#12304b;color:#fff;padding:9px 12px;border-radius:8px;cursor:pointer}
+@media(max-width:800px){.shell{display:block}.sidebar{position:relative;height:auto;border-right:0;border-bottom:1px solid var(--line)}nav{display:flex;overflow:auto}nav button{min-width:max-content}main{padding:18px}.controls{grid-template-columns:1fr 120px}.toggle{grid-column:1/-1}}
+</style>
 </head>
-
 <body>
-  <main class="shell">
-    <header class="header">
-      <div>
-        <div class="eyebrow">Capability directory</div>
-        <h1 class="title">ProWork Skills</h1>
-        <div class="intro">
-          Explore the ArcGIS, application-building, data, visualization,
-          and automation capabilities currently available. Search by task,
-          technology, output, or keyword.
-        </div>
-      </div>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">ProWork <b>Skills</b></div>
+    <div class="muted">Interactive capability catalog</div>
+    <div class="total">
+      <strong id="total"></strong>
+      <span>installed skills</span>
+    </div>
+    <div class="muted" style="margin:0 10px 7px">CATEGORIES</div>
+    <nav id="nav"></nav>
+  </aside>
 
-      <div class="countbox">
-        <div class="count" id="heroCount">12</div>
-        <div class="count-label">capability groups</div>
+  <main>
+    <header>
+      <div>
+        <h1>Skill Library</h1>
+        <div class="muted">Search, filter, inspect, and favorite available workflows.</div>
       </div>
+      <div class="muted">Local skill catalog</div>
     </header>
 
-    <section class="toolbar" aria-label="Skill search and filters">
-      <div class="search-wrap">
-        <span class="search-icon" aria-hidden="true">⌕</span>
-
-        <input
-          id="search"
-          class="search"
-          type="search"
-          placeholder="Search functions — e.g. publish, route, dashboard, knowledge graph…"
-          autocomplete="off"
-          aria-label="Search skills"
-        >
-
-        <button id="clear" class="clear" aria-label="Clear search">
-          ×
-        </button>
-      </div>
-
-      <div class="filters" id="filters"></div>
-    </section>
-
-    <div class="meta">
-      <span><strong id="resultCount">12</strong> results</span>
-
-      <span class="hint">
-        <span class="kbd">/</span> search · click a card for details
-      </span>
+    <div class="controls">
+      <input id="search" placeholder="Search skills…" autofocus>
+      <select id="sort">
+        <option value="az">Name A–Z</option>
+        <option value="za">Name Z–A</option>
+        <option value="category">Category</option>
+      </select>
+      <button id="favoritesOnly" class="toggle">☆ Favorites only</button>
     </div>
 
-    <section class="grid" id="grid"></section>
-
-    <div id="empty" class="empty">
-      <h2>No matching skills</h2>
-      <p>Try a broader function or select “All”.</p>
+    <div class="summary">
+      <span id="shown" class="pill"></span>
+      <span id="activeCategory" class="pill">All categories</span>
     </div>
+
+    <section id="grid" class="grid"></section>
   </main>
+</div>
 
-  <script>
-    const skills = [
-      {
-        name: "Experience Builder Deployment",
-        category: "Applications",
-        icon: "⬡",
-        description:
-          "Deploy and maintain ArcGIS Experience Builder applications in ArcGIS Enterprise through reproducible PowerShell workflows.",
-        tags: [
-          "Experience Builder",
-          "Enterprise",
-          "PowerShell",
-          "migration"
-        ],
-        details:
-          "Creates or updates Experience items, remaps data sources and web maps, manages widgets, and migrates app configurations between environments.",
-        installedSkill: true
-      },
-      {
-        name: "Interactive Maps & Scenes",
-        category: "Visualization",
-        icon: "◈",
-        description:
-          "Build interactive 2D web maps and 3D web scenes using ArcGIS web technologies.",
-        tags: ["WebMap", "WebScene", "2D", "3D", "basemap"],
-        details:
-          "Mounts authenticated maps and scenes, controls viewpoints, layers, basemaps, popups, and map widgets."
-      },
-      {
-        name: "Dashboard Design",
-        category: "Applications",
-        icon: "▦",
-        description:
-          "Create paneled, data-driven operational dashboards with maps, KPIs, statistics, gauges, and status lists.",
-        tags: ["dashboard", "KPI", "panels", "monitoring"],
-        details:
-          "Supports left, right, footer, and KPI regions with live layer-bound indicators and cohesive light or dark themes."
-      },
-      {
-        name: "Layer Styling",
-        category: "Visualization",
-        icon: "◉",
-        description:
-          "Apply thematic cartography and smart mapping renderers to feature layers.",
-        tags: [
-          "symbology",
-          "heatmap",
-          "unique values",
-          "graduated colors"
-        ],
-        details:
-          "Styles layers with simple symbols, categories, graduated color classes, heatmaps, transparency, and visual variables."
-      },
-      {
-        name: "Portal Search & Discovery",
-        category: "Data",
-        icon: "⌕",
-        description:
-          "Find ArcGIS Online or Enterprise content, inspect item metadata, and discover services.",
-        tags: ["portal", "search", "items", "services"],
-        details:
-          "Searches authenticated portal content and retrieves item, service, layer, field, and sharing information."
-      },
-      {
-        name: "Feature Data Queries",
-        category: "Data",
-        icon: "≣",
-        description:
-          "Query, filter, count, summarize, and spatially analyze records in ArcGIS feature layers.",
-        tags: ["SQL", "features", "statistics", "spatial query"],
-        details:
-          "Handles attribute and spatial filters, counts, grouped statistics, pagination, and cross-layer questions."
-      },
-      {
-        name: "Geocoding & Places",
-        category: "Analysis",
-        icon: "⌖",
-        description:
-          "Turn addresses and place names into locations, or reverse-geocode coordinates.",
-        tags: ["geocode", "address", "places", "coordinates"],
-        details:
-          "Supports single and bulk geocoding, candidate search, reverse geocoding, and mapped location results."
-      },
-      {
-        name: "Routing & Network Analysis",
-        category: "Analysis",
-        icon: "↝",
-        description:
-          "Solve routes and other travel-based analyses using ArcGIS network services.",
-        tags: ["route", "directions", "travel time", "network"],
-        details:
-          "Works with stops, barriers, travel modes, route geometry, directions, and result visualization."
-      },
-      {
-        name: "Geometry Operations",
-        category: "Analysis",
-        icon: "△",
-        description:
-          "Buffer, project, measure, intersect, union, and compare spatial geometries.",
-        tags: ["buffer", "intersect", "area", "distance"],
-        details:
-          "Performs server-grade geometry operations while preserving spatial reference and efficiently handling large results."
-      },
-      {
-        name: "Raster & Imagery",
-        category: "Analysis",
-        icon: "▧",
-        description:
-          "Inspect and analyze image services, elevation, pixels, statistics, and raster functions.",
-        tags: ["raster", "imagery", "elevation", "pixel"],
-        details:
-          "Supports pixel identification, profiles, service statistics, raster functions, and imagery exploration."
-      },
-      {
-        name: "Knowledge Graphs",
-        category: "Data",
-        icon: "⌬",
-        description:
-          "Query, search, edit, model, and visualize ArcGIS Knowledge Graph entities and relationships.",
-        tags: [
-          "openCypher",
-          "entities",
-          "relationships",
-          "link chart"
-        ],
-        details:
-          "Runs graph queries and full-text search, manages schema and records, and renders interactive link charts."
-      },
-      {
-        name: "Publishing & Sharing",
-        category: "Automation",
-        icon: "⇧",
-        description:
-          "Upload, publish, configure, and share ArcGIS portal content and hosted services.",
-        tags: ["publish", "upload", "sharing", "hosted layer"],
-        details:
-          "Supports repeatable publishing workflows, item updates, service configuration, and organization or group sharing."
-      }
-    ];
+<aside id="drawer" class="drawer">
+  <button id="closeDrawer" class="close">Close</button>
+  <div id="details"></div>
+</aside>
 
-    const categories = [
-      "All",
-      ...new Set(skills.map((skill) => skill.category))
-    ];
+<script>
+const skills=`add-basemap
+add-entities
+add-entities-to-link-chart
+add-entity-type
+add-fields
+add-kg-layer-to-map
+add-provenance
+add-rasters-from-directory
+add-rasters-to-mosaic-dataset
+add-relationships
+add-relationship-type
+add-selection-to-link-chart
+add-service-layer
+add-to-display
+add-toolbox
+aggregate-polygons
+aircraft-imagery-cv-exploitation
+airfield-event-capture
+allsource-geographic-kg-link-chart
+allsource-kg-map-verification
+allsource-named-pipe-bridge
+allsource-project-cleanup
+allsource-single-map-iteration
+alternate-candidate-recommender
+analysis-objects-3d
+append
+apply-raster-function
+arcctl-cli
+arcctl-feature-service-inspection
+arcctl-geometry
+arcctl-geoprocessing
+arcctl-linear-referencing
+arcctl-publishing
+arcctl-raster
+arcctl-utility-network
+arcgis-ai-embeddings
+arcgis-allsource
+arcgis-allsource-addin-deployment
+arcgis-allsource-aircraft-and-imagery-intelligence
+arcgis-allsource-arcpy-real-data-analysis
+arcgis-allsource-compare-areas-suspect-triage
+arcgis-allsource-customization-automation
+arcgis-allsource-data-ingestion-management
+arcgis-allsource-defense-intelligence-workflows
+arcgis-allsource-find-cotravelers
+arcgis-allsource-find-meeting-locations-network
+arcgis-allsource-imagery-observation-workbench
+arcgis-allsource-link-analysis-knowledge-graphs
+arcgis-allsource-live-bridge-scene-loading
+arcgis-allsource-maps-scenes-visualization
+arcgis-allsource-movement-temporal-analysis
+arcgis-allsource-multi-source-correlation
+arcgis-allsource-production-dissemination
+arcgis-allsource-projects-templates-favorites
+arcgis-allsource-setup-install-licensing
+arcgis-allsource-spatial-analysis-geoprocessing
+arcgis-allsource-terminology-reference
+arcgis-api
+arcgis-basemap-gallery-config
+arcgis-basemap-resolution
+arcgis-calcite-app-shell
+arcgis-computer-vision
+arcgis-computer-vision-aircraft-detection-annotation-disposition
+arcgis-computer-vision-aircraft-training-and-qa
+arcgis-computer-vision-aircraft-type-refinement
+arcgis-computer-vision-detection-chip-qa-presentation
+arcgis-computer-vision-experimental-feature-extraction-loop
+arcgis-computer-vision-firefly-yolo-obb-aircraft-detection
+arcgis-computer-vision-imagery-feature-extraction-routing
+arcgis-custom-data-feeds
+arcgis-dashboard-qa
+arcgis-data-pipelines
+arcgis-dinov2
+arcgis-enterprise-live-webmap-styling
+arcgis-etl-workflow
+arcgis-feature-layer-query
+arcgis-geojson-explicit-schema-publish
+arcgis-image-server-toolbox
+arcgis-imagery-provider
+arcgis-integration-connector
+arcgis-javascript-sdk
+arcgis-js-sdk
+arcgis-knowledge-graph
+arcgis-knowledge-studio
+arcgis-notebooks
+arcgis-opensky-track-etl
+arcgis-operational-symbology
+arcgis-portal-admin
+arcgis-pro-map-state-inspection
+arcgis-pro-navigation-and-project-items
+arcgis-pro-sar-time-series-mosaics
+arcgis-pro-session-token-provider
+arcgis-publish-overwrite
+arcgis-python-auth-search
+arcgis-python-toolbox
+arcgis-rest-api-query
+arcgis-road-extraction
+arcgis-schema-locks
+arcgis-stc-cim-styling
+arcgis-storymaps
+arcgis-viewport-automation
+arcgis-viewshed-rf-coverage
+arcgis-web-app-hosted-intel-wiring
+arcpy
+arcpy-attribute-editing
+arcpy-cartography-export
+arcpy-environment-setup
+arcpy-feature-selection
+arcpy-logging-patterns
+arcpy-projections
+arcpy-raster-extraction
+arcpy-surface-analysis
+arcpy-vector-geoprocessing
+assemble-link-chart
+basic-enterprise-app-pattern
+batch-operations
+browser-anonymous
+browser-bridge-relay
+browser-identity-manager-popup
+browser-oauth2-app
+browser-oauth2-entra-federated
+browser-token-relay
+buffer-analysis
+buffer-and-build-road-geometry
+build-footprints-and-boundary
+build-mosaic-overviews
+build-pyramids-and-statistics
+calcite-components
+calculate-field
+cartographic-color-awareness
+cesiumjs-imagery
+classify-pixels
+clean-classified-raster
+composite-bands
+connect-to-knowledge-graph
+controller-shared-resources
+convert-labels-to-annotation
+convert-labels-to-graphics
+copy-features
+copy-raster
+create-dico-entity-types
+create-feature-class
+create-knowledge-graph-service
+create-link-chart
+create-mosaic-dataset
+create-python-toolbox
+create-server-connection
+custom-relationship-graph-svg
+custom-stac-asset-reader
+custom-tms-nonearth-reader
+custom-url-template-imagery
+custom-widget-arcgis-default-styling
+custom-widget-coordinate-clipboard
+custom-widget-delete-feature-confirm
+custom-widget-lens-filter
+dashboard-arcade-patterns
+dashboard-skills
+data-inspection
+data-pipeline-bigquery-geospatial-publish
+data-pipeline-clone-retarget
+data-pipeline-feature-merge-filter-clip
+data-pipeline-feature-service-copy-publish
+data-pipeline-item-json
+data-pipeline-live-json-feed
+data-pipeline-spatial-aggregate
+data-pipeline-temporal-enrichment
+data-pipeline-tool-widget-reference
+deep-learning-setup
+definition-query
+delete-entities
+density-based-clustering
+describe-map-state
+describe-mosaic-dataset
+describe-raster
+detect-objects
+detection-overlap-dedupe
+dew-satellite-threat-modeling
+dico-ontology-reference
+directions-routelayer
+download-install-dlpk
+downstream-embedding-analysis
+elevation-profile-analysis
+enable-labels
+enterprise-app-publishing
+enterprise-auth-patterns
+enterprise-query-knowledge-graph
+enterprise-web-imagery-layer
+exb-branch-versioning
+exb-custom-widget
+exb-workflow-manager
+experience-builder-deploy
+experience-builder-ps
+explore-directory
+export-knowledge-graph
+extract-by-mask
+extract-centerlines-from-polygons
+fastapi-arcgis-middleware
+feature-attachment-popup-styling
+featurelayerview-query-statistics-by-geometry
+fetch-living-atlas-imagery
+find-similar-features
+gdal-cli
+gdal-inspect
+gdal-raster-translate
+gdal-raster-warp
+gdal-rasterize-polygonize
+gdal-terrain-gdaldem
+gdal-vector-ogr2ogr
+generate-csv
+generate-embeddings
+geo-cop-information-design
+geoanalytics-server
+geoprocessing-viewshed-analysis
+get-data-model
+get-kg-layer-cim
+get-link-chart-cim
+highlight-scenelayer-3d
+hotspot-analysis
+image-server-ai-proxy
+image-server-ai-proxy-core-service
+image-server-embedding-pipeline
+imagery-cv-sam-anti-patterns
+imagery-layer-adjustment
+imagery-layers-and-providers
+imagerylayer-dynamic-image-service
+imagerytilelayer-tiled-image-service
+insert-features
+inspect-feature-layer
+interactive-viewshed-analysis
+js-coverage-viewshed-visualization
+json-to-features
+knowledge-studio-build-project-from-structure
+knowledge-studio-inspect-project-item-json
+knowledge-studio-link-chart-visual-configuration
+knowledge-studio-project-item-anatomy
+knowledge-studio-widget-surface-configuration
+knowledgegraph-apply-edits
+knowledgegraph-layer-map-display
+knowledgegraph-link-chart-browser
+knowledgegraph-service-fetch
+knowledgegraph-streaming-search-query
+label-route-3d-scene
+large-tool-output-handling
+list-maps-and-layers
+make-multidimensional-raster-layer
+map-cleanup
+map-data-to-dico
+map-design-palettes
+map-observation-graphic
+map-skills
+map-widget-defaults
+mapview-synced-feature-browser
+mask-clip-raster
+mean-center
+move-layer
+multibandreader-band-files
+multibasereader-asset-directory
+navwar-gps-jamming-dome
+notebook-execute-headless
+notebook-item-create
+notebook-runtimes-auth
+notebook-schedule-tasks
+notebook-server-admin
+notebook-snapshots
+object-observation-correlation
+offline-nl-feature-query
+ogc-wms-wmts-imagery
+open-investigation
+open-knowledge-graph
+operational-suitability-hexagon-glyph
+orbital-cone-of-variance
+pairwise-buffer
+pairwise-dissolve
+pgvector-semantic-search
+points-to-line
+portal-group-management
+portal-item-management
+portal-token-requester-client-cert
+portal-webapp-deploy
+pro-implied-csharp-addin
+pro-implied-python
+pro-project-awareness
+pro-viewshed-coverage-raster
+project-data
+project-raster
+proj-transform
+prowork
+prowork-3d-camera-patterns
+prowork-jumpstart
+prowork-live-map-analytics-panel
+prowork-live-map-anti-patterns
+prowork-live-map-cop-quality
+prowork-route-selection-highlight
+prowork-scenario-template
+proxy-metadata-rewrite-patterns
+python-api-key
+python-app-credentials
+python-pki-cert
+python-token-cache
+python-userpass
+query-feature-layer
+query-knowledge-graph
+raster-algebra-and-plot
+raster-to-vector-roads
+rasterio
+read-inspect-raster
+reclassify
+remove-from-display
+reproject-warp-raster
+resample
+rest-generate-token
+rf-coverage-contours-and-query
+rio-tiler-custom-readers
+road-mask-deep-learning
+run-python-toolbox
+run-script
+sage-create-mission-folder
+sage-data-preparation
+sage-dismounted-ccm-analysis
+sage-infrastructure-denial
+sage-mgrs-coordinate-conversion
+sage-mounted-ccm-analysis
+sage-mounted-route-analysis
+sage-obstacle-analysis
+sage-road-classification
+sam-drive-time-routing-analysis
+sam-name-collision-anti-patterns
+sam-threat-range-2d-3d-toolbox
+sar-ship-detection
+scene-visible-area-3d
+schedule-python-toolbox
+search-knowledge-graph
+sedona-arcgis-enterprise-integration
+sedona-bronze-ingest
+sedona-clustering-anomaly
+sedona-cotravel-convoy
+sedona-local-setup
+sedona-map-matching
+sedona-motion-statistics
+sedona-ordered-track-construction
+sedona-performance-tuning
+sedona-silver-clean-segment
+sedona-streaming-updates
+sedona-track-analytics
+sedona-trajectory-similarity
+sedona-trk-function-library
+select-analysis
+serve-controller-sidecar
+serve-tiles-to-arcgis
+set-centrality-config
+set-link-chart-cim
+set-link-chart-layout
+set-raster-symbology
+set-symbology
+shapefile-data-preparation
+space-3d-webapp-assembly
+space-domain-awareness
+spatial-sankey-logistics-analysis
+spectral-indices
+starter-enterprise-js-calcite-app-recipe
+storymap-action-button-webmap
+storymap-item-json-editing
+storymap-widgets
+style-kg-layer
+style-link-chart
+style-link-chart-labels
+styled-3d-sceneview-webapp
+suitability-status-model
+surface-analysis
+survey123-connect-xlsform-builder
+survey123-field-offline-operations
+survey123-reports-webhooks-automation
+survey123-web-designer-feature-layers
+threshold-guidance-engine
+titiler-dynamic-tiler-factory
+update-entities
+validate-against-dico
+verify-layer-visibility
+viewport-auto-embedding-monitor
+viewshed-analysis-and-styling
+viewshed-layer-slides
+visualization-icon-rotation-3d
+webmap-arcade-customization
+where-statement-builder-utility
+write-create-raster
+write-python-toolbox
+xy-table-to-point
+zonal-statistics-as-table
+zoom-to-extent
+zoom-to-layer`.trim().split("\n");
 
-    let activeCategory = "All";
+const categoryRules=[
+  ["Knowledge Graph",/knowledge|entity|entities|relationship|link-chart|\bkg\b|dico/],
+  ["Imagery & Raster",/raster|imagery|image-server|mosaic|spectral|pixel|sar-|stac|rio-|multiband|multibase/],
+  ["ArcGIS Pro & ArcPy",/arcpy|arcgis-pro|pro-|toolbox|feature-class|annotation/],
+  ["Web Apps & UI",/webapp|experience|\bexb\b|widget|calcite|browser|javascript|js-sdk|storymap|dashboard/],
+  ["Data Engineering",/pipeline|etl|sedona|gdal|geojson|csv|json|bigquery|data-/],
+  ["Analysis & Geometry",/buffer|viewshed|analysis|geometry|cluster|hotspot|route|surface|center|select|project|reproject|zonal|aggregate|dissolve|extract/],
+  ["AI & Computer Vision",/ai-|deep-learning|computer-vision|detect|embedding|dinov2|sam-|aircraft|road-extraction/],
+  ["Enterprise & Auth",/enterprise|portal|auth|token|publishing|publish|server|service/],
+  ["Maps & Visualization",/map|basemap|symbology|style|layer|display|3d|scene|cartograph|visual/],
+  ["Automation & Utilities",/.*/]
+];
 
-    const grid = document.getElementById("grid");
-    const search = document.getElementById("search");
-    const clearButton = document.getElementById("clear");
-    const filters = document.getElementById("filters");
-    const resultCount = document.getElementById("resultCount");
-    const heroCount = document.getElementById("heroCount");
-    const emptyState = document.getElementById("empty");
+const category=name=>categoryRules.find(rule=>rule[1].test(name))[0];
+const pretty=name=>name.split("-").map(word=>{
+  const acronyms=["3d","ai","api","cli","csv","etl","gdal","gis","json","kg","rf","sar","sdk","svg","tms","ui","url"];
+  return acronyms.includes(word)?word.toUpperCase():word[0].toUpperCase()+word.slice(1);
+}).join(" ");
 
-    filters.innerHTML = categories
-      .map(
-        (category) => `
-          <button
-            class="chip ${category === "All" ? "active" : ""}"
-            data-category="${category}"
-            type="button"
-          >
-            ${category}
-          </button>
-        `
-      )
-      .join("");
+let active="All";
+let favoritesOnly=false;
+let favorites=new Set(JSON.parse(localStorage.getItem("skill-favorites")||"[]"));
 
-    function getMatchingSkills() {
-      const query = search.value.trim().toLowerCase();
+const counts={};
+skills.forEach(name=>{
+  const group=category(name);
+  counts[group]=(counts[group]||0)+1;
+});
 
-      return skills.filter((skill) => {
-        const categoryMatches =
-          activeCategory === "All" ||
-          skill.category === activeCategory;
+const nav=document.querySelector("#nav");
+const grid=document.querySelector("#grid");
+const search=document.querySelector("#search");
+const sort=document.querySelector("#sort");
+const drawer=document.querySelector("#drawer");
 
-        const searchableText = [
-          skill.name,
-          skill.category,
-          skill.description,
-          skill.details,
-          ...skill.tags
-        ]
-          .join(" ")
-          .toLowerCase();
+document.querySelector("#total").textContent=skills.length;
+search.placeholder=`Search ${skills.length} skills…`;
 
-        const searchMatches =
-          !query || searchableText.includes(query);
-
-        return categoryMatches && searchMatches;
-      });
-    }
-
-    function toggleCard(card) {
-      const isOpen = card.classList.toggle("open");
-      card.setAttribute("aria-expanded", String(isOpen));
-    }
-
-    function render() {
-      const matchingSkills = getMatchingSkills();
-
-      grid.innerHTML = matchingSkills
-        .map(
-          (skill) => `
-            <article
-              class="card"
-              tabindex="0"
-              role="button"
-              aria-expanded="false"
-            >
-              <div class="top">
-                <div class="icon" aria-hidden="true">
-                  ${skill.icon}
-                </div>
-
-                <span class="badge">
-                  ${
-                    skill.installedSkill
-                      ? "Installed skill"
-                      : skill.category
-                  }
-                </span>
-              </div>
-
-              <h2>${skill.name}</h2>
-
-              <p class="desc">
-                ${skill.description}
-              </p>
-
-              <div class="tags">
-                ${skill.tags
-                  .map(
-                    (tag) => `<span class="tag">${tag}</span>`
-                  )
-                  .join("")}
-              </div>
-
-              <div class="details">
-                <b>Functions</b><br>
-                ${skill.details}
-              </div>
-            </article>
-          `
-        )
-        .join("");
-
-      resultCount.textContent = matchingSkills.length;
-      heroCount.textContent = skills.length;
-      emptyState.style.display =
-        matchingSkills.length > 0 ? "none" : "block";
-
-      clearButton.style.display =
-        search.value.trim() ? "block" : "none";
-
-      grid.querySelectorAll(".card").forEach((card) => {
-        card.addEventListener("click", () => {
-          toggleCard(card);
-        });
-
-        card.addEventListener("keydown", (event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            toggleCard(card);
-          }
-        });
-      });
-    }
-
-    search.addEventListener("input", render);
-
-    clearButton.addEventListener("click", () => {
-      search.value = "";
-      search.focus();
-      render();
+[["All",skills.length],...Object.entries(counts).sort((a,b)=>b[1]-a[1])]
+.forEach(([name,count])=>{
+  const button=document.createElement("button");
+  button.dataset.category=name;
+  button.innerHTML=`<span>${name}</span><span>${count}</span>`;
+  button.onclick=()=>{
+    active=name;
+    document.querySelectorAll("nav button").forEach(item=>{
+      item.classList.toggle("active",item.dataset.category===name);
     });
-
-    filters.addEventListener("click", (event) => {
-      const button = event.target.closest(".chip");
-
-      if (!button) {
-        return;
-      }
-
-      activeCategory = button.dataset.category;
-
-      filters.querySelectorAll(".chip").forEach((chip) => {
-        chip.classList.toggle("active", chip === button);
-      });
-
-      render();
-    });
-
-    document.addEventListener("keydown", (event) => {
-      if (
-        event.key === "/" &&
-        document.activeElement !== search
-      ) {
-        event.preventDefault();
-        search.focus();
-      }
-
-      if (
-        event.key === "Escape" &&
-        document.activeElement === search
-      ) {
-        search.value = "";
-        search.blur();
-        render();
-      }
-    });
-
     render();
-  </script>
+  };
+  nav.append(button);
+});
+
+nav.firstElementChild.classList.add("active");
+
+function saveFavorites(){
+  localStorage.setItem("skill-favorites",JSON.stringify([...favorites]));
+}
+
+function toggleFavorite(name,event){
+  event?.stopPropagation();
+  favorites.has(name)?favorites.delete(name):favorites.add(name);
+  saveFavorites();
+  render();
+}
+
+function openSkill(name){
+  const group=category(name);
+  const path=`agent-skills/${name}/SKILL.md`;
+
+  document.querySelector("#details").innerHTML=`
+    <span class="tag">${group}</span>
+    <h2>${pretty(name)}</h2>
+    <p class="muted">Installed skill identifier</p>
+    <div class="path">${name}</div>
+
+    <h3>Capability</h3>
+    <p>Workflow guidance for ${pretty(name).toLowerCase()}.</p>
+
+    <h3>Relative location</h3>
+    <div class="path">${path}</div>
+
+    <div class="actions">
+      <button id="copyName">Copy skill name</button>
+      <button id="detailFavorite">
+        ${favorites.has(name)?"★ Remove favorite":"☆ Add favorite"}
+      </button>
+    </div>
+  `;
+
+  document.querySelector("#copyName").onclick=async event=>{
+    await navigator.clipboard.writeText(name);
+    event.currentTarget.textContent="Copied";
+  };
+
+  document.querySelector("#detailFavorite").onclick=event=>{
+    toggleFavorite(name,event);
+    openSkill(name);
+  };
+
+  drawer.classList.add("open");
+}
+
+function render(){
+  const query=search.value.toLowerCase().trim();
+  const order=sort.value;
+
+  let visible=skills.filter(name=>{
+    const matchesCategory=active==="All"||category(name)===active;
+    const matchesSearch=!query||
+      name.includes(query)||
+      pretty(name).toLowerCase().includes(query);
+    const matchesFavorites=!favoritesOnly||favorites.has(name);
+    return matchesCategory&&matchesSearch&&matchesFavorites;
+  });
+
+  visible.sort((a,b)=>{
+    if(order==="za") return b.localeCompare(a);
+    if(order==="category"){
+      return (category(a)+a).localeCompare(category(b)+b);
+    }
+    return a.localeCompare(b);
+  });
+
+  document.querySelector("#shown").textContent=`${visible.length} shown`;
+  document.querySelector("#activeCategory").textContent=
+    active==="All"?"All categories":active;
+
+  grid.innerHTML="";
+
+  if(!visible.length){
+    grid.innerHTML='<div class="empty">No skills match these filters.</div>';
+    return;
+  }
+
+  visible.forEach(name=>{
+    const card=document.createElement("article");
+    card.className="card";
+    card.onclick=()=>openSkill(name);
+    card.innerHTML=`
+      <button class="star ${favorites.has(name)?"on":""}" 
+              aria-label="Toggle favorite">★</button>
+      <span class="tag">${category(name)}</span>
+      <h3>${pretty(name)}</h3>
+      <div class="muted">
+        Workflow guidance for ${pretty(name).toLowerCase()}.
+      </div>
+    `;
+    card.querySelector(".star").onclick=event=>toggleFavorite(name,event);
+    grid.append(card);
+  });
+}
+
+search.oninput=render;
+sort.onchange=render;
+
+document.querySelector("#favoritesOnly").onclick=event=>{
+  favoritesOnly=!favoritesOnly;
+  event.currentTarget.classList.toggle("on",favoritesOnly);
+  event.currentTarget.textContent=
+    favoritesOnly?"★ Favorites only":"☆ Favorites only";
+  render();
+};
+
+document.querySelector("#closeDrawer").onclick=()=>{
+  drawer.classList.remove("open");
+};
+
+document.addEventListener("keydown",event=>{
+  if(event.key==="Escape") drawer.classList.remove("open");
+  if(event.key==="/"&&document.activeElement.tagName!=="INPUT"){
+    event.preventDefault();
+    search.focus();
+  }
+});
+
+window.__app={skills,category,render};
+render();
+</script>
 </body>
 </html>
